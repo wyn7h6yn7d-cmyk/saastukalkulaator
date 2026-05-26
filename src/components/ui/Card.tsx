@@ -4,11 +4,20 @@ interface CardProps {
   children: ReactNode;
   className?: string;
   highlight?: boolean;
+  id?: string;
 }
 
-export function Card({ children, className = "", highlight = false }: CardProps) {
+export function Card({
+  children,
+  className = "",
+  highlight = false,
+  id,
+}: CardProps) {
   return (
-    <div className={highlight ? `card-highlight ${className}` : `card ${className}`}>
+    <div
+      id={id}
+      className={highlight ? `card-highlight ${className}` : `card ${className}`}
+    >
       {children}
     </div>
   );

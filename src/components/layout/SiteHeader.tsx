@@ -2,67 +2,102 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const DESKTOP_LINKS = [
-  { href: "/", label: "Avaleht" },
-  { href: "/app", label: "Võrdle" },
-  { href: "/recipes", label: "Retseptid" },
-  { href: "/alerts", label: "Alarmid" },
-  { href: "/stores", label: "Poed" },
-  { href: "/hinnad", label: "Hinnad" },
-] as const;
-
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+import { useEffect, useState } from "react";
+import { Logo } from "@/components/brand/Logo";
+import { HEADER_NAV, MORE_NAV, isNavActive } from "@/lib/siteNav";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sulge menüü pärast navigatsiooni
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-lg text-white shadow-sm">
-            🛒
-          </span>
-          <span className="text-lg font-bold text-slate-900">Säästukorv</span>
+    <header className="sticky top-0 z-40 border-b border-border bg-card">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
+        <Link href="/" className="shrink-0 hover:opacity-90">
+          <Logo />
         </Link>
 
         <nav
-          className="hidden items-center gap-1 md:flex"
+          className="hidden flex-1 items-center justify-center gap-0.5 md:flex"
           aria-label="Peamine navigatsioon"
         >
-          {DESKTOP_LINKS.map(({ href, label }) => (
+          {HEADER_NAV.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                isActive(pathname, href)
-                  ? "bg-emerald-50 text-emerald-800"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              className={`rounded-md px-3 py-2 text-sm font-medium ${
+                isNavActive(pathname, href)
+                  ? "text-brand"
+                  : "text-muted hover:text-ink"
               }`}
             >
               {label}
             </Link>
           ))}
-          <Link
-            href="/pricing"
-            className={`rounded-lg px-3 py-2 text-sm font-medium ${
-              isActive(pathname, "/pricing")
-                ? "bg-emerald-50 text-emerald-800"
-                : "text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            Hinnakiri
-          </Link>
         </nav>
 
-        <Link href="/app" className="btn-primary hidden !min-h-9 !py-2 !text-sm md:inline-flex">
-          Võrdle hindu
-        </Link>
+        <div className="ml-auto flex items-center gap-2">
+          <Link
+            href="/app"
+            className="btn-primary !min-h-9 shrink-0 !px-4 !py-2 !text-sm"
+          >
+            Alusta
+          </Link>
+          <button
+            type="button"
+            className="inline-flex min-h-9 items-center rounded-md border border-border px-3 text-sm font-medium text-ink md:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            Menüü
+          </button>
+        </div>
       </div>
+
+      {menuOpen && (
+        <nav
+          id="mobile-nav-menu"
+          className="border-t border-border bg-card px-4 py-3 md:hidden"
+          aria-label="Mobiilimenüü"
+        >
+          <ul className="space-y-1">
+            {HEADER_NAV.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={`block rounded-md px-3 py-2.5 text-sm font-medium ${
+                    isNavActive(pathname, href)
+                      ? "bg-brand-light text-brand"
+                      : "text-ink hover:bg-page"
+                  }`}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+            {MORE_NAV.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={`block rounded-md px-3 py-2.5 text-sm font-medium ${
+                    isNavActive(pathname, href)
+                      ? "bg-brand-light text-brand"
+                      : "text-muted hover:bg-page hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </header>
   );
 }

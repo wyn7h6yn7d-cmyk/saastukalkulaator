@@ -2,18 +2,18 @@ import Link from "next/link";
 import { products } from "@/lib/mockData";
 import { formatEuro } from "@/lib/format";
 import { Card } from "@/components/ui/Card";
-import { PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
+import { APP_PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
 
 export const metadata = { title: "Hinnad" };
 
 export default function PricesPage() {
   return (
     <WebLayout>
-      <div className={PAGE_CONTAINER}>
+      <div className={APP_PAGE_CONTAINER}>
         <header className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Hinnad</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Näidishinnad — reaalajas uuendusi pole veel.
+          <h1 className="text-2xl font-bold text-ink">Hinnad</h1>
+          <p className="mt-2 text-sm text-muted">
+            Pakkumised ja hinnad ühes vaates — praegu näidishinnad.
           </p>
         </header>
 
@@ -24,10 +24,10 @@ export default function PricesPage() {
               <li key={product.id}>
                 <Card className="flex min-h-14 items-center justify-between gap-4 px-4 py-3">
                   <div>
-                    <p className="font-semibold text-slate-900">{product.name}</p>
-                    <p className="text-xs text-slate-500">{product.defaultUnit}</p>
+                    <p className="font-semibold text-ink">{product.name}</p>
+                    <p className="text-xs text-muted">{product.defaultUnit}</p>
                   </div>
-                  <p className="shrink-0 text-base font-bold text-emerald-700">
+                  <p className="shrink-0 text-base font-bold text-brand">
                     {formatEuro(cheapest)}
                   </p>
                 </Card>

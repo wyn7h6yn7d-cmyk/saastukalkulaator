@@ -1,6 +1,8 @@
 # Säästukorv
 
-Veebirakendus Eesti ostukorvi optimeerimiseks. Lisa ostunimekiri brauseris ja võrdle näidishindu Rimi, Selveri, Maxima, Prisma ja Lidl vahel.
+**Responsiivne veebiäpp** Eesti ostukorvi võrdluseks. Kasutaja sisestab ostunimekirja brauseris; rakendus võrdleb näidishindu (Rimi, Selver, Maxima, Prisma, Lidl), soovitab toote kaupa, kus osta, näitab kogumaksumust, säästu ja poe jaotust.
+
+Töötab hästi **lauaarvutis, sülearvutis, tahvlis ja telefoni brauseris** — installimist pole vaja.
 
 > **Märkus:** Praegu kasutatakse demo/mock andmeid. Reaalajas hindade laadimist ega andmebaasi pole veel lisatud.
 
@@ -18,26 +20,9 @@ npm install
 npm run dev
 ```
 
-Ava [http://localhost:3000](http://localhost:3000)
+Ava brauseris: **[http://localhost:3000](http://localhost:3000)**
 
-## Deploy Vercelisse
-
-1. Pushi projekt GitHubi (või GitLab / Bitbucket).
-2. Mine [vercel.com](https://vercel.com) → **Add New Project**.
-3. Impordi repo — Vercel tuvastab Next.js automaatselt.
-4. Jäta vaike seaded:
-   - **Build Command:** `npm run build`
-   - **Output:** Next.js default
-5. Klõpsa **Deploy**.
-
-Soovituslik CLI viis:
-
-```bash
-npm i -g vercel
-vercel
-```
-
-Tootmisbuild enne deploy’d:
+Tootmisbuild:
 
 ```bash
 npm run build
@@ -49,10 +34,13 @@ npm run start
 | Tee | Kirjeldus |
 |-----|-----------|
 | `/` | Avaleht |
-| `/app` | Ostunimekirja võrdlus |
+| `/app` | Ostunimekirja võrdlus ja ostuplaan |
 | `/stores` | Poed |
-| `/hinnad` | Hinnakiri |
+| `/hinnad` | Tootehinnad |
+| `/recipes` | Retseptid → ostunimekiri |
+| `/alerts` | Pakkumise alarmid (MVP placeholder) |
 | `/pricing` | Paketid |
+| `/poed` | Suunab → `/stores` |
 
 ## Projekti struktuur
 
@@ -60,5 +48,17 @@ npm run start
 src/
   app/              # App Router lehed
   components/       # UI (layout, landing, tulemused)
-  lib/              # mock andmed, optimizer
+  lib/              # mock andmed, optimizer, retseptid
+```
+
+## Deploy Vercelisse
+
+1. Pushi projekt GitHubi.
+2. [vercel.com](https://vercel.com) → **Add New Project** → impordi repo.
+3. Vaike seaded: `npm run build`, Next.js output.
+4. **Deploy**.
+
+```bash
+npm i -g vercel
+vercel
 ```

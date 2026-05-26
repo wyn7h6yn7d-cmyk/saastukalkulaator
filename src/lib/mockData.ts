@@ -69,24 +69,14 @@ export const stores: Store[] = [
 
 function parsePackageAmount(packageSize: string): number {
   const normalized = packageSize.toLowerCase().replace(",", ".");
-
   const kg = normalized.match(/([\d.]+)\s*kg/);
   if (kg) return parseFloat(kg[1]!);
-
   const gOnly = normalized.match(/([\d.]+)\s*g(?!r)/);
-  if (gOnly && !normalized.includes("kg")) {
-    return parseFloat(gOnly[1]!) / 1000;
-  }
-
+  if (gOnly && !normalized.includes("kg")) return parseFloat(gOnly[1]!) / 1000;
   const liters = normalized.match(/([\d.]+)\s*l/);
   if (liters) return parseFloat(liters[1]!);
-
   const count = normalized.match(/([\d.]+)\s*tk/);
   if (count) return parseFloat(count[1]!);
-
-  const rolls = normalized.match(/([\d.]+)\s*rulli/);
-  if (rolls) return parseFloat(rolls[1]!);
-
   return 1;
 }
 
@@ -103,21 +93,16 @@ function buildStoreProducts(): StoreProduct[] {
     for (const chain of CHAINS) {
       const storeId = STORE_BY_CHAIN[chain] as StoreId;
       const price = seed.prices[chain];
-      const isDiscount = seed.discountAt?.includes(chain) ?? false;
-      const loyaltyPrice = seed.loyaltyAt?.[chain];
-      const brand =
-        seed.brand === "—" ? CHAIN_LABEL[chain] : seed.brand;
-
       items.push({
         storeId,
         productId: seed.id,
         originalName: `${seed.name} ${seed.packageSize}`,
-        brand,
+        brand: seed.brand === "—" ? CHAIN_LABEL[chain] : seed.brand,
         price,
         unitPrice: computeUnitPrice(price, seed.packageSize),
         packageSize: seed.packageSize,
-        isDiscount,
-        loyaltyPrice,
+        isDiscount: seed.discountAt?.includes(chain) ?? false,
+        loyaltyPrice: seed.loyaltyAt?.[chain],
         updatedAt: UPDATED_AT,
       });
     }
@@ -126,7 +111,6 @@ function buildStoreProducts(): StoreProduct[] {
   return items;
 }
 
-/** Price used for cart optimization (best available to customer). */
 export function getEffectivePrice(sp: StoreProduct): number {
   if (sp.loyaltyPrice != null && sp.loyaltyPrice < sp.price) {
     return sp.loyaltyPrice;
@@ -136,21 +120,21 @@ export function getEffectivePrice(sp: StoreProduct): number {
 
 export const storeProducts: StoreProduct[] = buildStoreProducts();
 
+export const STORE_PRODUCT_MAP = Object.fromEntries(
+  storeProducts.map((sp) => [`${sp.storeId}:${sp.productId}`, sp]),
+) as Record<string, StoreProduct>;
+
 export const products: Product[] = PRODUCT_SEEDS.map((seed) => ({
   id: seed.id,
   name: seed.name,
   defaultUnit: seed.defaultUnit,
   prices: Object.fromEntries(
     stores.map((store) => {
-      const sp = storeProducts.find(
-        (row) => row.storeId === store.id && row.productId === seed.id,
-      )!;
+      const sp = STORE_PRODUCT_MAP[`${store.id}:${seed.id}`]!;
       return [store.id, getEffectivePrice(sp)];
     }),
   ) as Record<StoreId, number>,
 }));
-
-// ——— Backward-compatible exports ———
 
 export const STORES = stores;
 export const PRODUCTS = products;
@@ -162,10 +146,6 @@ export const STORE_MAP = Object.fromEntries(
 export const PRODUCT_MAP = Object.fromEntries(
   products.map((p) => [p.id, p]),
 ) as Record<string, Product>;
-
-export const STORE_PRODUCT_MAP = Object.fromEntries(
-  storeProducts.map((sp) => [`${sp.storeId}:${sp.productId}`, sp]),
-) as Record<string, StoreProduct>;
 
 export const FILTER_STORE_IDS: StoreId[] = stores.map((s) => s.id);
 

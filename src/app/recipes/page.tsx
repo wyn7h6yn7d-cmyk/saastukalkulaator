@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { RecipeCard } from "@/components/RecipeCard";
-import { PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
+import { APP_PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
 import { RECIPES } from "@/lib/recipes";
 
 export const metadata = {
@@ -11,12 +11,12 @@ export const metadata = {
 export default function RecipesPage() {
   return (
     <WebLayout>
-      <div className={PAGE_CONTAINER}>
+      <div className={APP_PAGE_CONTAINER}>
         <header className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Retseptid</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          <h1 className="text-2xl font-bold text-ink">Retseptid</h1>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
             Vali lihtne retsept ja lisa koostisosad otse võrdlusesse. Hinnad on
-            näidishinnad (odavaim pood demoandmetes).
+            praegu näidised.
           </p>
         </header>
 
@@ -28,9 +28,9 @@ export default function RecipesPage() {
           ))}
         </ul>
 
-        <p className="mt-8 text-center text-xs text-slate-400">
+        <p className="mt-8 text-center text-xs text-muted">
           Juba oma nimekiri?{" "}
-          <Link href="/app" className="font-medium text-emerald-700 underline">
+          <Link href="/app" className="font-medium text-brand underline">
             Mine võrdlema
           </Link>
         </p>

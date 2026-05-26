@@ -29,17 +29,10 @@ export const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
     keywords: ["laundry detergent", "pesugeel", "pesuvahend"],
     productId: "pesugeel",
   },
-  { keywords: ["shampoo", "šampoon", "sampoon"], productId: "šampoon" },
-  { keywords: ["toothpaste", "hambapasta"], productId: "hambapasta" },
-  { keywords: ["prügikott", "prugikott", "garbage bag"], productId: "prugikott" },
-  { keywords: ["paberkott", "paper bag"], productId: "paberkott" },
-  { keywords: ["küürivahend", "kuurigivahend", "cleaner", "cif"], productId: "kuurigivahend" },
 
   // Pets
   { keywords: ["cat food", "kassitoit", "kassi toit"], productId: "kassitoit" },
   { keywords: ["dog food", "koeratoit", "koera toit"], productId: "koeratoit" },
-  { keywords: ["kassiliiv", "cat litter"], productId: "kassiliiv" },
-  { keywords: ["koeramaius", "dog treat"], productId: "koeramaius" },
 
   // Meat
   {
@@ -47,9 +40,6 @@ export const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
     productId: "kanafilee",
   },
   { keywords: ["minced meat", "ground beef", "hakkliha", "hakklih"], productId: "hakkliha" },
-  { keywords: ["kanatiivad", "chicken wings", "chicken thigh"], productId: "kanatiivad" },
-  { keywords: ["lihapallid", "meatballs"], productId: "lihapallid" },
-  { keywords: ["pork", "sealiha", "sealiha"], productId: "sealiha" },
   { keywords: ["peekon", "bacon"], productId: "peekon" },
   { keywords: ["vorst", "sausage"], productId: "vorst" },
   { keywords: ["sink", "ham", "vorstik"], productId: "sink" },
@@ -64,10 +54,6 @@ export const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
   { keywords: ["cheese", "juust", "gouda"], productId: "juust" },
   { keywords: ["sour cream", "hapukoor"], productId: "hapukoor" },
   { keywords: ["yogurt", "yoghurt", "jogurt"], productId: "jogurt" },
-  { keywords: ["cottage cheese", "kohupiim"], productId: "kohupiim" },
-  { keywords: ["smetana", "cream"], productId: "smetana" },
-  { keywords: ["lard", "rasv"], productId: "rasv" },
-  { keywords: ["honey", "mett", "mesi"], productId: "mett" },
 
   // Dry
   { keywords: ["rice", "riis"], productId: "riis" },
@@ -76,10 +62,6 @@ export const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
   { keywords: ["oatmeal", "oats", "kaerahelbed", "kaerahelb"], productId: "kaerahelbed" },
   { keywords: ["flour", "jahu"], productId: "jahu" },
   { keywords: ["sugar", "suhkur"], productId: "suhkur" },
-  { keywords: ["peas", "hernes", "herned"], productId: "hernes" },
-  { keywords: ["beans", "uba", "oad"], productId: "uba" },
-  { keywords: ["breadcrumbs", "riivsai"], productId: "riivsai" },
-  { keywords: ["couscous", "kuskuss"], productId: "kuskuss" },
 
   // Produce
   { keywords: ["banana", "banaan", "banaanid"], productId: "banaan" },
@@ -89,19 +71,11 @@ export const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
   { keywords: ["tomato", "tomatoes", "tomat", "tomatid"], productId: "tomat" },
   { keywords: ["carrot", "porgand", "porgandid"], productId: "porgand" },
   { keywords: ["onion", "sibul", "sibulad"], productId: "sibul" },
-  { keywords: ["orange", "apelsin"], productId: "apelsin" },
-  { keywords: ["pepper", "paprika", "paprikad"], productId: "paprika" },
   { keywords: ["salad", "salat"], productId: "salat" },
-  { keywords: ["cabbage", "kapsas"], productId: "kapsas" },
-  { keywords: ["broccoli", "brokoli"], productId: "brokoli" },
 
   // Drinks
   { keywords: ["coffee", "kohv"], productId: "kohv" },
   { keywords: ["tea", "tee"], productId: "tee" },
-  { keywords: ["orange juice", "mahlmahl"], productId: "mahlmahl" },
-  { keywords: ["nectar", "nektar", "nektariin"], productId: "nektariin" },
-  { keywords: ["ice tea", "jäätee", "jaatee", "jook"], productId: "jook" },
-  { keywords: ["cider", "siider"], productId: "siider" },
   { keywords: ["mineral water", "mineraalvesi", "mineralvesi"], productId: "mineraalvesi" },
   { keywords: ["juice", "mahl"], productId: "mahl" },
 ];

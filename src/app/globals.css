@@ -1,19 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #f4f7f5;
+  --color-bg: #f7f8f4;
   --color-surface: #ffffff;
-  --color-text: #1a2e24;
-  --color-muted: #5f7368;
-  --color-accent: #059669;
-  --color-accent-light: #d1fae5;
-  --color-accent-hover: #047857;
-  --shadow-card: 0 1px 3px rgba(26, 46, 36, 0.06), 0 4px 12px rgba(26, 46, 36, 0.04);
-  --radius-card: 1rem;
+  --color-text: #172016;
+  --color-muted: #667064;
+  --color-accent: #2f7d4a;
+  --color-accent-light: #e8f3ec;
+  --color-accent-hover: #26633c;
+  --color-border: #e2e6de;
+  --color-discount: #d9480f;
+  --shadow-card: 0 1px 2px rgba(23, 32, 22, 0.04);
+  --radius-card: 0.75rem;
 }
 
 @theme inline {
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --color-page: #f7f8f4;
+  --color-card: #ffffff;
+  --color-ink: #172016;
+  --color-muted: #667064;
+  --color-brand: #2f7d4a;
+  --color-brand-light: #e8f3ec;
+  --color-border: #e2e6de;
+  --color-discount: #d9480f;
 }
 
 html {
@@ -26,43 +38,37 @@ body {
   min-height: 100dvh;
 }
 
-/* Cards */
 .card {
   background: var(--color-surface);
   border-radius: var(--radius-card);
-  border: 1px solid rgba(26, 46, 36, 0.06);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-card);
 }
 
 .card-highlight {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  border: none;
-  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.25);
-  color: white;
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
 }
 
-/* Buttons */
 .btn-primary {
   display: inline-flex;
   min-height: 3rem;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   background: var(--color-accent);
   padding: 0.75rem 1.5rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: white;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: background 0.15s ease;
 }
 
 .btn-primary:hover {
   background: var(--color-accent-hover);
-}
-
-.btn-primary:active {
-  transform: scale(0.98);
 }
 
 .btn-secondary {
@@ -70,8 +76,8 @@ body {
   min-height: 3rem;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(26, 46, 36, 0.12);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
   background: white;
   padding: 0.75rem 1.5rem;
   font-size: 0.9375rem;
@@ -81,30 +87,28 @@ body {
 }
 
 .btn-secondary:hover {
-  background: #f8faf9;
+  background: var(--color-bg);
 }
 
-/* Form fields */
 .input-field {
   width: 100%;
   min-height: 3rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(26, 46, 36, 0.12);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
   background: white;
   padding: 0.75rem 1rem;
   font-size: 1rem;
   color: var(--color-text);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input-field::placeholder {
-  color: #94a89e;
+  color: var(--color-muted);
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+  box-shadow: 0 0 0 2px rgba(47, 125, 74, 0.12);
 }
 
 .textarea-field {
@@ -113,28 +117,28 @@ body {
   line-height: 1.5;
 }
 
-/* Savings display */
 .savings-hero {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.15;
+  color: var(--color-accent);
 }
 
 @media (min-width: 640px) {
   .savings-hero {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
 }
 
 .badge-discount {
-  background: #fff7ed;
-  color: #c2410c;
-  border: 1px solid #fed7aa;
+  background: #fff4ed;
+  color: var(--color-discount);
+  border: 1px solid #f0cdb8;
 }
 
 .badge-loyalty {
-  background: #f5f3ff;
-  color: #6d28d9;
-  border: 1px solid #ddd6fe;
+  background: #f5f6f4;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
 }

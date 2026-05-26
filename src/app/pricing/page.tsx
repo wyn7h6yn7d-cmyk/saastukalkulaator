@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
-import { PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
+import { APP_PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
 
-export const metadata = { title: "Hinnakiri" };
+export const metadata = { title: "Paketid" };
 
 const PLANS = [
   {
@@ -27,7 +27,7 @@ const PLANS = [
     highlighted: true,
     features: [
       "piiramatu arv ostunimekirju",
-      "pakkumise alarmid",
+      "hinnateated",
       "lemmiktoodete jälgimine",
       "pere jagatud ostunimekiri",
       "retseptist ostukorv",
@@ -55,44 +55,46 @@ const PLANS = [
 export default function PricingPage() {
   return (
     <WebLayout>
-      <div className={PAGE_CONTAINER}>
-        <header className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">Hinnakiri</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Alusta tasuta — makselahendus tuleb hiljem.
+      <div className={APP_PAGE_CONTAINER}>
+        <header className="mb-8 text-center lg:mb-10">
+          <h1 className="text-2xl font-bold text-ink lg:text-3xl">
+            Paketid
+          </h1>
+          <p className="mt-2 text-sm text-muted lg:text-base">
+            Vali pakett, mis sobib. Alusta tasuta — maksmine lisandub hiljem.
           </p>
         </header>
 
-        <ul className="space-y-5">
+        <ul className="grid gap-5 lg:grid-cols-3 lg:gap-6">
           {PLANS.map((plan) => (
             <li key={plan.id}>
               <Card
                 className={`p-5 sm:p-6 ${
-                  plan.highlighted ? "ring-2 ring-emerald-400" : ""
+                  plan.highlighted ? "ring-2 ring-brand/40" : ""
                 }`}
               >
                 {plan.highlighted && (
-                  <span className="mb-3 inline-block rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                  <span className="mb-3 inline-block rounded-md bg-brand px-3 py-1 text-xs font-bold text-white">
                     Populaarseim
                   </span>
                 )}
-                <h2 className="text-xl font-bold text-slate-900">{plan.title}</h2>
+                <h2 className="text-xl font-bold text-ink">{plan.title}</h2>
                 <p className="mt-2">
                   <span
                     className={`font-bold ${
                       plan.highlighted
-                        ? "text-3xl text-emerald-700"
-                        : "text-2xl text-slate-900"
+                        ? "text-3xl text-brand"
+                        : "text-2xl text-ink"
                     }`}
                   >
                     {plan.price}
                   </span>
-                  <span className="text-slate-500">{plan.period}</span>
+                  <span className="text-muted">{plan.period}</span>
                 </p>
-                <ul className="mt-5 space-y-2.5 text-sm text-slate-700">
+                <ul className="mt-5 space-y-2.5 text-sm text-ink">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2">
-                      <span className="text-emerald-600">✓</span>
+                      <span className="text-brand">✓</span>
                       {f}
                     </li>
                   ))}
@@ -114,8 +116,8 @@ export default function PricingPage() {
           Makselahendust MVP-s veel ei ole. See on hinnastuse näidis.
         </p>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
-          <Link href="/" className="font-medium text-emerald-700 hover:underline">
+        <p className="mt-6 text-center text-sm text-muted">
+          <Link href="/" className="font-medium text-brand hover:underline">
             ← Tagasi avalehele
           </Link>
         </p>

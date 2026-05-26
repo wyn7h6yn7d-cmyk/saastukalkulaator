@@ -1,14 +1,14 @@
 import { Suspense } from "react";
-import { ShoppingApp } from "@/components/ShoppingApp";
+import { ComparePageClient } from "@/components/ComparePageClient";
 
 export const metadata = {
-  title: "Minu ostunimekiri — Säästukorv",
+  title: "Võrdle ostukorvi",
 };
 
 export default function ComparePage() {
   return (
     <Suspense fallback={null}>
-      <ShoppingApp />
+      <ComparePageClient />
     </Suspense>
   );
 }

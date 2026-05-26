@@ -3,7 +3,6 @@ import {
   getStoreProduct,
   getStoresByChain,
   PRODUCT_MAP,
-  stores,
 } from "./mockData";
 import { matchProductIdFromText } from "./productMatching";
 import {

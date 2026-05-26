@@ -1,18 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans } from "next/font/google";
 import "./globals.css";
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin", "latin-ext"],
-});
 
 export const metadata: Metadata = {
   title: {
     default: "Säästukorv",
     template: "%s | Säästukorv",
   },
-  description: "Tark ostunimekiri, mis leiab odavaima ostuplaani.",
+  description:
+    "Võrdle ostukorvi hindu ja leia soodsam plaan — pakkumised ja hinnad ühes vaates.",
   icons: {
     icon: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
   },
@@ -21,7 +16,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#059669",
+  themeColor: "#2f7d4a",
 };
 
 export default function RootLayout({
@@ -30,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="et" className={`${dmSans.variable} h-full`}>
+    <html lang="et">
       <body className="min-h-dvh font-sans antialiased">{children}</body>
     </html>
   );

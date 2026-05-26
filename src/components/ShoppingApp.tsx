@@ -1,37 +1,63 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import {
-  parseShoppingList,
-  runOptimization,
-  toOptimizerItems,
-  type OptimizationResult,
-} from "@/lib/optimizer";
-import { DEFAULT_LIST_TEXT } from "@/lib/parseShoppingList";
-import {
-  consumeShoppingListPrefill,
-  readListFromSearchParam,
-} from "@/lib/shoppingListPrefill";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import { runOptimization, type OptimizationResult } from "@/lib/optimizer";
+import { DEFAULT_LIST_TEXT } from "@/lib/defaultList";
 import { FILTER_STORE_IDS, stores } from "@/lib/mockData";
 import { TRAVEL_TOLERANCE_OPTIONS } from "@/lib/savingsVsTime";
 import type { ShopPreference, StoreId, TravelTolerance } from "@/lib/types";
-import { OptimizationResults } from "./OptimizationResults";
 import { Card } from "./ui/Card";
-import { PAGE_CONTAINER, WebLayout } from "./layout/WebLayout";
+import { APP_PAGE_CONTAINER, WebLayout } from "./layout/WebLayout";
 
-const PREFERENCES: { value: ShopPreference; label: string }[] = [
-  { value: "cheapest", label: "Odavaim hind" },
-  { value: "max1", label: "Max 1 pood" },
-  { value: "max2", label: "Max 2 poodi" },
-  { value: "max3", label: "Max 3 poodi" },
+const OptimizationResultSummary = dynamic(
+  () =>
+    import("./OptimizationResultSummary").then((m) => ({
+      default: m.OptimizationResultSummary,
+    })),
+  {
+    loading: () => (
+      <Card className="h-40 bg-page p-5">
+        <span className="sr-only">Laen tulemust…</span>
+      </Card>
+    ),
+  },
+);
+
+const OptimizationResultDetails = dynamic(
+  () =>
+    import("./OptimizationResultDetails").then((m) => ({
+      default: m.OptimizationResultDetails,
+    })),
+  {
+    loading: () => (
+      <Card className="h-24 bg-page p-5">
+        <span className="sr-only">Laen üksikasju…</span>
+      </Card>
+    ),
+  },
+);
+
+const MAX_STORE_OPTIONS: { value: ShopPreference; label: string }[] = [
+  { value: "cheapest", label: "Piiramata" },
+  { value: "max1", label: "1 pood" },
+  { value: "max2", label: "2 poodi" },
+  { value: "max3", label: "3 poodi" },
 ];
 
-export function ShoppingApp() {
-  const searchParams = useSearchParams();
-  const resultsRef = useRef<HTMLDivElement>(null);
-  const [listText, setListText] = useState(DEFAULT_LIST_TEXT);
-  const [prefillNotice, setPrefillNotice] = useState<string | null>(null);
+interface ShoppingAppProps {
+  initialListText?: string;
+  prefillNotice?: string | null;
+}
+
+export function ShoppingApp({
+  initialListText,
+  prefillNotice: initialPrefillNotice = null,
+}: ShoppingAppProps) {
+  const [listText, setListText] = useState(
+    () => initialListText?.trim() || DEFAULT_LIST_TEXT,
+  );
+  const [prefillNotice] = useState(initialPrefillNotice);
   const [preference, setPreference] = useState<ShopPreference>("max2");
   const [travelTolerance, setTravelTolerance] =
     useState<TravelTolerance>("extra2");
@@ -40,22 +66,6 @@ export function ShoppingApp() {
   );
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OptimizationResult | null>(null);
-
-  useEffect(() => {
-    const fromStorage = consumeShoppingListPrefill();
-    const fromUrl = readListFromSearchParam(searchParams);
-    const prefilled = fromStorage ?? fromUrl;
-
-    if (prefilled?.trim()) {
-      setListText(prefilled.trim());
-      setResult(null);
-      setPrefillNotice(
-        fromStorage
-          ? "Retsepti koostisosad on ostunimekirjas. Võrdle hindu allpool."
-          : "Ostunimekiri laaditi lingist. Võrdle hindu allpool.",
-      );
-    }
-  }, [searchParams]);
 
   function toggleStore(id: StoreId) {
     setSelectedStores((prev) => {
@@ -67,29 +77,18 @@ export function ShoppingApp() {
       }
       return next;
     });
-    setResult(null);
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setResult(null);
 
     if (selectedStores.size === 0) {
       setError("Vali vähemalt üks pood.");
       return;
     }
 
-    const parsed = parseShoppingList(listText);
-    const items = toOptimizerItems(parsed);
-
-    if (items.length === 0) {
-      setError("Lisa vähemalt üks toode (nt piim, munad, kanafilee).");
-      return;
-    }
-
     const selectedStoreList = stores.filter((s) => selectedStores.has(s.id));
-
     const optimization = runOptimization(
       listText,
       selectedStoreList,
@@ -98,32 +97,28 @@ export function ShoppingApp() {
     );
 
     if (!optimization) {
+      setResult(null);
       setError("Valitud poodides pole kõiki tooteid. Vali rohkem poode.");
       return;
     }
 
     setResult(optimization);
-    requestAnimationFrame(() => {
-      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
   }
 
   return (
     <WebLayout>
-      <div className={PAGE_CONTAINER}>
-        <header className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Võrdle hindu</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            Kirjuta tooted eraldi ridadele. Näiteks: piim 2l, munad 10tk,
-            kanafilee 600g. Või alusta{" "}
-            <a href="/recipes" className="font-medium text-emerald-700 underline">
-              retseptidest
-            </a>
-            .
+      <div className={APP_PAGE_CONTAINER}>
+        <header className="mb-6 lg:mb-8">
+          <h1 className="text-2xl font-bold text-ink md:text-3xl">
+            Võrdle ostukorvi
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted md:text-base">
+            Kirjuta nimekiri ja leiame soodsaima ostuplaani. Praegu
+            näidishinnad.
           </p>
           {prefillNotice && (
             <p
-              className="mt-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
+              className="mt-3 rounded-lg border border-border bg-brand-light px-4 py-3 text-sm text-ink"
               role="status"
             >
               {prefillNotice}
@@ -131,153 +126,158 @@ export function ShoppingApp() {
           )}
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <Card className="p-4 sm:p-5">
-            <label
-              htmlFor="shopping-list"
-              className="mb-2 block text-sm font-semibold text-slate-800"
-            >
-              Ostunimekiri
-            </label>
-            <textarea
-              id="shopping-list"
-              value={listText}
-              onChange={(e) => {
-                setListText(e.target.value);
-                setResult(null);
-              }}
-              rows={8}
-              className="input-field textarea-field font-mono text-sm"
-              placeholder="piim 2l&#10;munad 10tk..."
-            />
-          </Card>
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] lg:items-start lg:gap-8 xl:gap-10">
+          <form onSubmit={handleSubmit} className="min-w-0">
+            <Card className="p-4 sm:p-5">
+              <label
+                htmlFor="shopping-list"
+                className="block text-sm font-semibold text-ink"
+              >
+                Ostunimekiri
+              </label>
+              <p className="mt-1 text-xs text-muted">
+                Üks toode rea kohta, nt{" "}
+                <span className="font-mono text-ink">piim 2l</span> või{" "}
+                <span className="font-mono text-ink">munad 10tk</span>
+              </p>
+              <textarea
+                id="shopping-list"
+                value={listText}
+                onChange={(e) => setListText(e.target.value)}
+                rows={9}
+                className="input-field textarea-field mt-3 font-mono text-sm"
+                placeholder={"piim 2l\nmunad 10tk\nkanafilee 600g"}
+                spellCheck={false}
+              />
 
-          <Card className="p-4 sm:p-5">
-            <h2 className="text-sm font-semibold text-slate-800">Eelistused</h2>
-            <fieldset className="mt-3 space-y-2">
-              <legend className="sr-only">Eelistus</legend>
-              {PREFERENCES.map(({ value, label }) => (
-                <label
-                  key={value}
-                  className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
-                    preference === value
-                      ? "border-emerald-400 bg-emerald-50"
-                      : "border-slate-200 bg-white"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="preference"
-                    checked={preference === value}
-                    onChange={() => {
-                      setPreference(value);
-                      setResult(null);
-                    }}
-                    className="h-5 w-5 shrink-0 accent-emerald-600"
-                  />
-                  <span className="text-sm font-medium text-slate-800">
-                    {label}
-                  </span>
-                </label>
-              ))}
-            </fieldset>
-          </Card>
-
-          <Card className="p-4 sm:p-5">
-            <h2 className="text-sm font-semibold text-slate-800">
-              Kui palju lisateekonda oled nõus tegema?
-            </h2>
-            <fieldset className="mt-3 space-y-2">
-              <legend className="sr-only">Lisateekond</legend>
-              {TRAVEL_TOLERANCE_OPTIONS.map(({ value, label, hint }) => (
-                <label
-                  key={value}
-                  className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition-colors ${
-                    travelTolerance === value
-                      ? "border-emerald-400 bg-emerald-50"
-                      : "border-slate-200 bg-white"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="travelTolerance"
-                    checked={travelTolerance === value}
-                    onChange={() => {
-                      setTravelTolerance(value);
-                      setResult(null);
-                    }}
-                    className="mt-0.5 h-5 w-5 shrink-0 accent-emerald-600"
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium text-slate-800">
+              <fieldset className="mt-6">
+                <legend className="text-sm font-semibold text-ink">
+                  Mitu poodi kasutada?
+                </legend>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {MAX_STORE_OPTIONS.map(({ value, label }) => (
+                    <label
+                      key={value}
+                      className={`inline-flex min-h-10 cursor-pointer items-center rounded-md border px-3 py-2 text-sm font-medium ${
+                        preference === value
+                          ? "border-brand bg-brand-light text-brand"
+                          : "border-border bg-card text-ink"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="preference"
+                        checked={preference === value}
+                        onChange={() => setPreference(value)}
+                        className="sr-only"
+                      />
                       {label}
-                    </span>
-                    <span className="mt-0.5 block text-xs text-slate-500">
-                      {hint}
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </fieldset>
-          </Card>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
 
-          <Card className="p-4 sm:p-5">
-            <h2 className="text-sm font-semibold text-slate-800">Poed</h2>
-            <div className="mt-3 space-y-2">
-              {stores.map((store) => (
+              <fieldset className="mt-6">
+                <legend className="text-sm font-semibold text-ink">
+                  Milliseid poode võrdleme?
+                </legend>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {stores.map((store) => (
+                    <label
+                      key={store.id}
+                      className={`flex min-h-11 cursor-pointer items-center gap-2.5 rounded-md border px-3 py-2.5 ${
+                        selectedStores.has(store.id)
+                          ? "border-brand bg-brand-light"
+                          : "border-border bg-card"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedStores.has(store.id)}
+                        onChange={() => toggleStore(store.id)}
+                        className="h-4 w-4 shrink-0 rounded border-border accent-brand"
+                      />
+                      <span className="text-sm font-medium text-ink">
+                        {store.name}
+                        <span className="font-normal text-muted">
+                          {" "}
+                          · {store.distanceKm} km
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <div className="mt-6">
                 <label
-                  key={store.id}
-                  className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 ${
-                    selectedStores.has(store.id)
-                      ? "border-emerald-400 bg-emerald-50"
-                      : "border-slate-200"
-                  }`}
+                  htmlFor="travel-tolerance"
+                  className="text-sm font-semibold text-ink"
                 >
-                  <input
-                    type="checkbox"
-                    checked={selectedStores.has(store.id)}
-                    onChange={() => toggleStore(store.id)}
-                    className="h-5 w-5 shrink-0 rounded accent-emerald-600"
-                  />
-                  <span className="text-sm font-medium text-slate-800">
-                    {store.name}
-                    <span className="ml-1 font-normal text-slate-500">
-                      · {store.distanceKm} km
-                    </span>
-                  </span>
+                  Kui kaugele oled valmis sõitma?
                 </label>
-              ))}
-            </div>
-          </Card>
-
-          {error && (
-            <p
-              className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800"
-              role="alert"
-            >
-              {error}
-            </p>
-          )}
-
-          <button type="submit" className="btn-primary w-full">
-            Leia parim ostuplaan
-          </button>
-        </form>
-
-        <div ref={resultsRef} className="mt-10">
-          {result ? (
-            <OptimizationResults result={result} />
-          ) : (
-            <Card className="p-8 text-center">
-              <p className="text-3xl opacity-30" aria-hidden>
-                🛒
-              </p>
-              <p className="mt-3 text-sm text-slate-600">
-                Tulemused ilmuvad siia pärast võrdlust.
-              </p>
+                <select
+                  id="travel-tolerance"
+                  value={travelTolerance}
+                  onChange={(e) =>
+                    setTravelTolerance(e.target.value as TravelTolerance)
+                  }
+                  className="input-field mt-2 !min-h-11 text-sm"
+                >
+                  {TRAVEL_TOLERANCE_OPTIONS.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </Card>
-          )}
+
+            {error && (
+              <p
+                className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                role="alert"
+              >
+                {error}
+              </p>
+            )}
+
+            <button type="submit" className="btn-primary mt-4 w-full text-base">
+              Leia parim ostuplaan
+            </button>
+
+            {result && (
+              <div className="mt-6 lg:hidden">
+                <OptimizationResultSummary result={result} />
+              </div>
+            )}
+          </form>
+
+          <aside className="mt-8 hidden lg:mt-0 lg:block">
+            {result ? (
+              <div className="sticky top-[4.5rem]">
+                <OptimizationResultSummary result={result} />
+              </div>
+            ) : (
+              <Card className="p-6">
+                <h2 className="text-sm font-semibold text-ink">Tulemus</h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted">
+                  Pärast nupu{" "}
+                  <strong className="font-medium text-ink">
+                    Leia parim ostuplaan
+                  </strong>{" "}
+                  näed siin kogusummat, säästu ja soovitust.
+                </p>
+              </Card>
+            )}
+          </aside>
         </div>
+
+        {result && (
+          <div className="mt-10 border-t border-border pt-10 lg:mt-12">
+            <OptimizationResultDetails result={result} />
+          </div>
+        )}
       </div>
     </WebLayout>
   );
