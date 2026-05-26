@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 const DESKTOP_LINKS = [
   { href: "/", label: "Avaleht" },
   { href: "/app", label: "Võrdle" },
+  { href: "/recipes", label: "Retseptid" },
+  { href: "/alerts", label: "Alarmid" },
   { href: "/stores", label: "Poed" },
   { href: "/hinnad", label: "Hinnad" },
 ] as const;

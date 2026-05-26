@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/", label: "Avaleht", icon: "🏠" },
   { href: "/app", label: "Võrdle", icon: "⚖️" },
+  { href: "/recipes", label: "Retseptid", icon: "🍳" },
   { href: "/stores", label: "Poed", icon: "🏬" },
+  { href: "/alerts", label: "Alarmid", icon: "🔔" },
   { href: "/hinnad", label: "Hinnad", icon: "📋" },
 ] as const;
 
@@ -23,14 +25,14 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200/90 bg-white/95 backdrop-blur-md md:hidden"
       aria-label="Alumine navigatsioon"
     >
-      <div className="mx-auto flex max-w-lg items-stretch justify-around px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
+      <div className="mx-auto flex max-w-lg items-stretch justify-between gap-0.5 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
         {TABS.map(({ href, label, icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link
               key={href}
               href={href}
-              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors ${
+              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-0.5 py-1.5 transition-colors ${
                 active ? "text-emerald-700" : "text-slate-500"
               }`}
             >

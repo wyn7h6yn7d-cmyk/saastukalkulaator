@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ShoppingApp } from "@/components/ShoppingApp";
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function ComparePage() {
-  return <ShoppingApp />;
+  return (
+    <Suspense fallback={null}>
+      <ShoppingApp />
+    </Suspense>
+  );
 }

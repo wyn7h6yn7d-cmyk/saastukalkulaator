@@ -1,11 +1,33 @@
 import { formatEuro } from "@/lib/format";
 import type { OptimizationResult } from "@/lib/optimizer";
+import type { WorthItVerdict } from "@/lib/savingsVsTime";
 import { Card } from "./ui/Card";
 import { StoreBadge } from "./StoreBadge";
 
 interface OptimizationResultsProps {
   result: OptimizationResult;
 }
+
+const VERDICT_STYLES: Record<
+  WorthItVerdict,
+  { ring: string; badge: string; badgeText: string }
+> = {
+  yes: {
+    ring: "ring-emerald-300",
+    badge: "bg-emerald-100 text-emerald-900",
+    badgeText: "Jah",
+  },
+  no: {
+    ring: "ring-amber-300",
+    badge: "bg-amber-100 text-amber-900",
+    badgeText: "Ei",
+  },
+  marginal: {
+    ring: "ring-slate-300",
+    badge: "bg-slate-100 text-slate-800",
+    badgeText: "Kaalu",
+  },
+};
 
 export function OptimizationResults({ result }: OptimizationResultsProps) {
   const unmatched = result.parsed
@@ -17,8 +39,83 @@ export function OptimizationResults({ result }: OptimizationResultsProps) {
     return a.total - b.total;
   });
 
+  const { savingsVsTime } = result;
+  const verdictStyle = VERDICT_STYLES[savingsVsTime.verdict];
+
   return (
     <div className="space-y-5">
+      <Card className={`p-5 ring-2 ${verdictStyle.ring} sm:p-6`}>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h3 className="text-sm font-semibold text-slate-800">
+            Sääst vs aeg
+          </h3>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${verdictStyle.badge}`}
+          >
+            Kas tasub ära? {verdictStyle.badgeText}
+          </span>
+        </div>
+
+        <dl className="mt-4 grid grid-cols-2 gap-4">
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              Hinnanguline sääst
+            </dt>
+            <dd className="mt-1 text-2xl font-bold text-emerald-700">
+              {formatEuro(savingsVsTime.estimatedSavingsEuro)}
+            </dd>
+            <dd className="text-xs text-slate-500">vs odavaim üks pood</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              Lisateekond
+            </dt>
+            <dd className="mt-1 text-2xl font-bold text-slate-900">
+              {savingsVsTime.estimatedExtraDistanceKm} km
+            </dd>
+            <dd className="text-xs text-slate-500">
+              lähim {savingsVsTime.nearestStore.name} (
+              {savingsVsTime.nearestStore.distanceKm} km)
+            </dd>
+          </div>
+        </dl>
+
+        <p className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-800">
+          {savingsVsTime.message}
+        </p>
+
+        <p className="mt-2 text-xs text-slate-500">
+          Lihtne mudel: iga lisapood = poe kaugus − lähima poe kaugus (
+          {savingsVsTime.nearestStore.distanceKm} km).
+        </p>
+      </Card>
+
+      {result.travelTolerance === "nearest" && (
+        <Card className="border-emerald-200 bg-emerald-50/80 p-4 sm:p-5">
+          <h3 className="font-semibold text-emerald-900">Lähim pood</h3>
+          <p className="mt-1 text-sm text-emerald-800">
+            {result.nearestAllInOne.store.name} ·{" "}
+            {result.nearestAllInOne.store.distanceKm} km
+          </p>
+          <p className="mt-3 text-2xl font-bold text-emerald-900">
+            {formatEuro(result.nearestAllInOne.total)}
+          </p>
+          {!result.nearestAllInOne.complete && (
+            <p className="mt-2 text-sm text-amber-800">
+              Mõni toode võib lähimas poest puududa — vaata allpool täielikke
+              võimalusi lubatud poodides.
+            </p>
+          )}
+        </Card>
+      )}
+
+      {result.excludedByDistance.length > 0 && (
+        <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+          Kauguse piirangu tõttu jäeti välja:{" "}
+          {result.excludedByDistance.map((s) => s.name).join(", ")}.
+        </p>
+      )}
+
       <Card highlight className="p-5 sm:p-6">
         <p className="text-sm font-medium text-emerald-100">
           Soovitatud ostuplaan
@@ -115,7 +212,7 @@ export function OptimizationResults({ result }: OptimizationResultsProps) {
           Kui ostaksid kõik ühest poest
         </h3>
         <p className="mt-1 text-xs text-slate-500">
-          Odavaim: {result.cheapestAllInOne.store.name}
+          Odavaim lubatud vahemikus: {result.cheapestAllInOne.store.name}
         </p>
         <ol className="mt-4 space-y-2">
           {rankedAllInOne.map((option, index) => (
@@ -130,6 +227,9 @@ export function OptimizationResults({ result }: OptimizationResultsProps) {
               <div>
                 <span className="text-sm font-medium text-slate-800">
                   {option.store.name}
+                </span>
+                <span className="ml-1 text-xs text-slate-500">
+                  {option.store.distanceKm} km
                 </span>
                 {!option.complete && (
                   <p className="text-xs text-amber-700">Mõni toode puudub</p>

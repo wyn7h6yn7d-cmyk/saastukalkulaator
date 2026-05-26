@@ -6,7 +6,13 @@ import {
   stores,
 } from "./mockData";
 import { matchProductIdFromText } from "./productMatching";
-import type { ChainId, Store, StoreId } from "./types";
+import {
+  buildSavingsVsTimeAssessment,
+  filterStoresByTravelTolerance,
+  getNearestStore,
+  type SavingsVsTimeAssessment,
+} from "./savingsVsTime";
+import type { ChainId, Store, StoreId, TravelTolerance } from "./types";
 
 // ——— Types ———
 
@@ -75,9 +81,15 @@ export interface OptimizationResult {
   allInOneOptions: AllInOneStoreOption[];
   cheapestAllInOne: AllInOneStoreOption;
   mostExpensiveAllInOne: AllInOneStoreOption;
+  /** Lähima poe ühe-poe ost (kõik tooted või osaline) */
+  nearestAllInOne: AllInOneStoreOption;
   split: CheapestSplitResult;
   savings: SavingsResult;
   message: string;
+  savingsVsTime: SavingsVsTimeAssessment;
+  travelTolerance: TravelTolerance;
+  /** Poed, mis jäid kauguse filtri taha */
+  excludedByDistance: Store[];
 }
 
 function extractQuantityText(line: string): string {
@@ -405,42 +417,76 @@ export function preferenceToMaxStores(
 
 export function runOptimization(
   listText: string,
-  selectedChains: ChainId[],
+  selectedStores: Store[],
   preference: "cheapest" | "max1" | "max2" | "max3",
+  travelTolerance: TravelTolerance,
 ): OptimizationResult | null {
   const parsed = parseShoppingList(listText);
   const items = toOptimizerItems(parsed);
 
   if (items.length === 0) return null;
 
-  const allInOneOptions = getAllInOneStoreOptions(items, selectedChains);
+  const allowedStores = filterStoresByTravelTolerance(
+    selectedStores,
+    travelTolerance,
+  );
+  if (allowedStores.length === 0) return null;
+
+  const excludedByDistance = selectedStores.filter(
+    (s) => !allowedStores.some((a) => a.id === s.id),
+  );
+
+  const allowedChains = allowedStores.map((s) => s.chain);
+  const effectivePreference =
+    travelTolerance === "nearest" ? "max1" : preference;
+
+  const allInOneOptions = getAllInOneStoreOptions(items, allowedChains);
   const completeOptions = allInOneOptions.filter((o) => o.complete);
 
   if (completeOptions.length === 0) return null;
 
-  const cheapestAllInOne = completeOptions[0]!.total;
-  const mostExpensiveAllInOne =
+  const cheapestAllInOneTotal = completeOptions[0]!.total;
+  const mostExpensiveAllInOneTotal =
     completeOptions[completeOptions.length - 1]!.total;
 
   const maxStores = preferenceToMaxStores(
-    preference,
-    selectedChains.length,
+    effectivePreference,
+    allowedChains.length,
   );
-  const split = getCheapestSplit(items, selectedChains, maxStores);
+  const split = getCheapestSplit(items, allowedChains, maxStores);
 
   const savings = calculateSavings(
     split.total,
-    cheapestAllInOne,
-    mostExpensiveAllInOne,
+    cheapestAllInOneTotal,
+    mostExpensiveAllInOneTotal,
   );
+
+  const planStoreIds = split.groups.map((g) => g.store.id);
+  const savingsVsTime = buildSavingsVsTimeAssessment({
+    selectedStores,
+    planStoreIds,
+    savingsEuro: savings.vsCheapestAllInOne,
+    tolerance: travelTolerance,
+  });
+
+  const nearestStore = getNearestStore(selectedStores);
+  const nearestAllInOne =
+    allInOneOptions.find((o) => o.store.id === nearestStore.id) ??
+    allInOneOptions[0]!;
+
+  const message = savingsVsTime.message;
 
   return {
     parsed,
     allInOneOptions,
     cheapestAllInOne: completeOptions[0]!,
     mostExpensiveAllInOne: completeOptions[completeOptions.length - 1]!,
+    nearestAllInOne,
     split,
     savings,
-    message: getRecommendationMessage(savings),
+    message,
+    savingsVsTime,
+    travelTolerance,
+    excludedByDistance,
   };
 }

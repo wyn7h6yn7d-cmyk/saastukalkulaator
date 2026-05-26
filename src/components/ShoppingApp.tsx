@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   parseShoppingList,
   runOptimization,
@@ -8,8 +9,13 @@ import {
   type OptimizationResult,
 } from "@/lib/optimizer";
 import { DEFAULT_LIST_TEXT } from "@/lib/parseShoppingList";
+import {
+  consumeShoppingListPrefill,
+  readListFromSearchParam,
+} from "@/lib/shoppingListPrefill";
 import { FILTER_STORE_IDS, stores } from "@/lib/mockData";
-import type { ChainId, ShopPreference, StoreId } from "@/lib/types";
+import { TRAVEL_TOLERANCE_OPTIONS } from "@/lib/savingsVsTime";
+import type { ShopPreference, StoreId, TravelTolerance } from "@/lib/types";
 import { OptimizationResults } from "./OptimizationResults";
 import { Card } from "./ui/Card";
 import { PAGE_CONTAINER, WebLayout } from "./layout/WebLayout";
@@ -22,14 +28,34 @@ const PREFERENCES: { value: ShopPreference; label: string }[] = [
 ];
 
 export function ShoppingApp() {
+  const searchParams = useSearchParams();
   const resultsRef = useRef<HTMLDivElement>(null);
   const [listText, setListText] = useState(DEFAULT_LIST_TEXT);
+  const [prefillNotice, setPrefillNotice] = useState<string | null>(null);
   const [preference, setPreference] = useState<ShopPreference>("max2");
+  const [travelTolerance, setTravelTolerance] =
+    useState<TravelTolerance>("extra2");
   const [selectedStores, setSelectedStores] = useState<Set<StoreId>>(
     () => new Set(FILTER_STORE_IDS),
   );
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OptimizationResult | null>(null);
+
+  useEffect(() => {
+    const fromStorage = consumeShoppingListPrefill();
+    const fromUrl = readListFromSearchParam(searchParams);
+    const prefilled = fromStorage ?? fromUrl;
+
+    if (prefilled?.trim()) {
+      setListText(prefilled.trim());
+      setResult(null);
+      setPrefillNotice(
+        fromStorage
+          ? "Retsepti koostisosad on ostunimekirjas. Võrdle hindu allpool."
+          : "Ostunimekiri laaditi lingist. Võrdle hindu allpool.",
+      );
+    }
+  }, [searchParams]);
 
   function toggleStore(id: StoreId) {
     setSelectedStores((prev) => {
@@ -62,11 +88,14 @@ export function ShoppingApp() {
       return;
     }
 
-    const selectedChains: ChainId[] = stores
-      .filter((s) => selectedStores.has(s.id))
-      .map((s) => s.chain);
+    const selectedStoreList = stores.filter((s) => selectedStores.has(s.id));
 
-    const optimization = runOptimization(listText, selectedChains, preference);
+    const optimization = runOptimization(
+      listText,
+      selectedStoreList,
+      preference,
+      travelTolerance,
+    );
 
     if (!optimization) {
       setError("Valitud poodides pole kõiki tooteid. Vali rohkem poode.");
@@ -86,8 +115,20 @@ export function ShoppingApp() {
           <h1 className="text-2xl font-bold text-slate-900">Võrdle hindu</h1>
           <p className="mt-2 text-sm leading-relaxed text-slate-600">
             Kirjuta tooted eraldi ridadele. Näiteks: piim 2l, munad 10tk,
-            kanafilee 600g.
+            kanafilee 600g. Või alusta{" "}
+            <a href="/recipes" className="font-medium text-emerald-700 underline">
+              retseptidest
+            </a>
+            .
           </p>
+          {prefillNotice && (
+            <p
+              className="mt-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
+              role="status"
+            >
+              {prefillNotice}
+            </p>
+          )}
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -136,6 +177,44 @@ export function ShoppingApp() {
                   />
                   <span className="text-sm font-medium text-slate-800">
                     {label}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+          </Card>
+
+          <Card className="p-4 sm:p-5">
+            <h2 className="text-sm font-semibold text-slate-800">
+              Kui palju lisateekonda oled nõus tegema?
+            </h2>
+            <fieldset className="mt-3 space-y-2">
+              <legend className="sr-only">Lisateekond</legend>
+              {TRAVEL_TOLERANCE_OPTIONS.map(({ value, label, hint }) => (
+                <label
+                  key={value}
+                  className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition-colors ${
+                    travelTolerance === value
+                      ? "border-emerald-400 bg-emerald-50"
+                      : "border-slate-200 bg-white"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="travelTolerance"
+                    checked={travelTolerance === value}
+                    onChange={() => {
+                      setTravelTolerance(value);
+                      setResult(null);
+                    }}
+                    className="mt-0.5 h-5 w-5 shrink-0 accent-emerald-600"
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium text-slate-800">
+                      {label}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-slate-500">
+                      {hint}
+                    </span>
                   </span>
                 </label>
               ))}

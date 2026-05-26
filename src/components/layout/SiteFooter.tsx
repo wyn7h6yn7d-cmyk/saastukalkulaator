@@ -9,6 +9,12 @@ export function SiteFooter() {
           <Link href="/app" className="hover:text-emerald-700">
             Võrdle
           </Link>
+          <Link href="/recipes" className="hover:text-emerald-700">
+            Retseptid
+          </Link>
+          <Link href="/alerts" className="hover:text-emerald-700">
+            Alarmid
+          </Link>
           <Link href="/stores" className="hover:text-emerald-700">
             Poed
           </Link>

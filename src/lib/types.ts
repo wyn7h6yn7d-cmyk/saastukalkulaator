@@ -64,3 +64,6 @@ export interface CartOptimization {
 }
 
 export type ShopPreference = "cheapest" | "max1" | "max2" | "max3";
+
+/** Kui palju lisateekonda kasutaja on nõus tegema */
+export type TravelTolerance = "nearest" | "extra2" | "extra5" | "unlimited";
