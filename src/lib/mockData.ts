@@ -4,6 +4,7 @@ import {
   STORE_BY_CHAIN,
 } from "./productCatalog";
 import { findProductByName as findProduct } from "./productMatching";
+import { stores } from "./storesData";
 import type {
   ChainId,
   Product,
@@ -16,56 +17,7 @@ const UPDATED_AT = "2026-05-20T08:00:00.000Z";
 
 export const CHAINS: ChainId[] = ["prisma", "rimi", "selver", "maxima", "lidl"];
 
-export const CHAIN_COLORS: Record<ChainId, string> = {
-  prisma: "#FF6B00",
-  rimi: "#E30613",
-  selver: "#00A651",
-  maxima: "#0054A6",
-  lidl: "#0050AA",
-};
-
-export const stores: Store[] = [
-  {
-    id: "prisma-sikupilli",
-    chain: "prisma",
-    name: "Prisma Sikupilli",
-    address: "Tartu mnt 87, Tallinn",
-    distanceKm: 2.4,
-    color: CHAIN_COLORS.prisma,
-  },
-  {
-    id: "rimi-ulemiste",
-    chain: "rimi",
-    name: "Rimi Ülemiste",
-    address: "Suur-Sõjamäe 4, Tallinn",
-    distanceKm: 3.1,
-    color: CHAIN_COLORS.rimi,
-  },
-  {
-    id: "selver-jarve",
-    chain: "selver",
-    name: "Selver Järve",
-    address: "Pärnu mnt 238, Tallinn",
-    distanceKm: 4.2,
-    color: CHAIN_COLORS.selver,
-  },
-  {
-    id: "maxima-lasnamae",
-    chain: "maxima",
-    name: "Maxima XXX Lasnamäe",
-    address: "Linnamäe tee 57, Tallinn",
-    distanceKm: 5.0,
-    color: CHAIN_COLORS.maxima,
-  },
-  {
-    id: "lidl-tahesaju",
-    chain: "lidl",
-    name: "Lidl Tähesaju",
-    address: "Tähesaju tee 4, Tallinn",
-    distanceKm: 3.8,
-    color: CHAIN_COLORS.lidl,
-  },
-];
+export { stores, CHAIN_COLORS, FILTER_STORE_IDS } from "./storesData";
 
 function parsePackageAmount(packageSize: string): number {
   const normalized = packageSize.toLowerCase().replace(",", ".");
@@ -146,8 +98,6 @@ export const STORE_MAP = Object.fromEntries(
 export const PRODUCT_MAP = Object.fromEntries(
   products.map((p) => [p.id, p]),
 ) as Record<string, Product>;
-
-export const FILTER_STORE_IDS: StoreId[] = stores.map((s) => s.id);
 
 export const FILTER_CHAIN_IDS: ChainId[] = [...CHAINS];
 

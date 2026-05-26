@@ -473,7 +473,7 @@ export function runOptimization(
     allInOneOptions.find((o) => o.store.id === nearestStore.id) ??
     allInOneOptions[0]!;
 
-  const message = savingsVsTime.message;
+  const message = getRecommendationMessage(savings);
 
   return {
     parsed,

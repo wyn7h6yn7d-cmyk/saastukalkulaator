@@ -80,7 +80,11 @@ export const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
   { keywords: ["juice", "mahl"], productId: "mahl" },
 ];
 
-const RULES_BY_KEYWORD_LENGTH = [...KEYWORD_RULES].sort(
+/** Eelarvutatud — ei sorteeri igal renderil / matchil uuesti */
+const RULES_BY_KEYWORD_LENGTH = KEYWORD_RULES.map((rule) => ({
+  productId: rule.productId,
+  keywords: [...rule.keywords].sort((a, b) => b.length - a.length),
+})).sort(
   (a, b) =>
     Math.max(...b.keywords.map((k) => k.length)) -
     Math.max(...a.keywords.map((k) => k.length)),
@@ -100,8 +104,7 @@ export function matchProductIdFromText(text: string): string | null {
   const lower = text.toLowerCase();
 
   for (const rule of RULES_BY_KEYWORD_LENGTH) {
-    const keywords = [...rule.keywords].sort((a, b) => b.length - a.length);
-    for (const kw of keywords) {
+    for (const kw of rule.keywords) {
       if (lower.includes(kw)) return rule.productId;
     }
   }

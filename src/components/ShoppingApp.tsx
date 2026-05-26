@@ -1,42 +1,15 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useState } from "react";
-import { runOptimization, type OptimizationResult } from "@/lib/optimizer";
+import type { OptimizationResult } from "@/lib/optimizer";
 import { DEFAULT_LIST_TEXT } from "@/lib/defaultList";
-import { FILTER_STORE_IDS, stores } from "@/lib/mockData";
+import { FILTER_STORE_IDS, stores } from "@/lib/storesData";
 import { TRAVEL_TOLERANCE_OPTIONS } from "@/lib/savingsVsTime";
 import type { ShopPreference, StoreId, TravelTolerance } from "@/lib/types";
+import { OptimizationResultDetails } from "./OptimizationResultDetails";
+import { OptimizationResultSummary } from "./OptimizationResultSummary";
 import { Card } from "./ui/Card";
 import { APP_PAGE_CONTAINER, WebLayout } from "./layout/WebLayout";
-
-const OptimizationResultSummary = dynamic(
-  () =>
-    import("./OptimizationResultSummary").then((m) => ({
-      default: m.OptimizationResultSummary,
-    })),
-  {
-    loading: () => (
-      <Card className="h-40 bg-page p-5">
-        <span className="sr-only">Laen tulemust…</span>
-      </Card>
-    ),
-  },
-);
-
-const OptimizationResultDetails = dynamic(
-  () =>
-    import("./OptimizationResultDetails").then((m) => ({
-      default: m.OptimizationResultDetails,
-    })),
-  {
-    loading: () => (
-      <Card className="h-24 bg-page p-5">
-        <span className="sr-only">Laen üksikasju…</span>
-      </Card>
-    ),
-  },
-);
 
 const MAX_STORE_OPTIONS: { value: ShopPreference; label: string }[] = [
   { value: "cheapest", label: "Piiramata" },
@@ -66,6 +39,7 @@ export function ShoppingApp({
   );
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OptimizationResult | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
   function toggleStore(id: StoreId) {
     setSelectedStores((prev) => {
@@ -79,7 +53,7 @@ export function ShoppingApp({
     });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
@@ -89,20 +63,27 @@ export function ShoppingApp({
     }
 
     const selectedStoreList = stores.filter((s) => selectedStores.has(s.id));
-    const optimization = runOptimization(
-      listText,
-      selectedStoreList,
-      preference,
-      travelTolerance,
-    );
 
-    if (!optimization) {
-      setResult(null);
-      setError("Valitud poodides pole kõiki tooteid. Vali rohkem poode.");
-      return;
+    setIsOptimizing(true);
+    try {
+      const { runOptimization } = await import("@/lib/optimizer");
+      const optimization = runOptimization(
+        listText,
+        selectedStoreList,
+        preference,
+        travelTolerance,
+      );
+
+      if (!optimization) {
+        setResult(null);
+        setError("Valitud poodides pole kõiki tooteid. Vali rohkem poode.");
+        return;
+      }
+
+      setResult(optimization);
+    } finally {
+      setIsOptimizing(false);
     }
-
-    setResult(optimization);
   }
 
   return (
@@ -242,8 +223,12 @@ export function ShoppingApp({
               </p>
             )}
 
-            <button type="submit" className="btn-primary mt-4 w-full text-base">
-              Leia parim ostuplaan
+            <button
+              type="submit"
+              className="btn-primary mt-4 w-full text-base"
+              disabled={isOptimizing}
+            >
+              {isOptimizing ? "Arvutan…" : "Leia parim ostuplaan"}
             </button>
 
             {result && (

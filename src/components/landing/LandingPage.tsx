@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Card } from "../ui/Card";
 import { APP_PAGE_CONTAINER, WebLayout } from "../layout/WebLayout";
 
 const STEPS = [
