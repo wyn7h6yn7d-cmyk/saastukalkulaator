@@ -11,7 +11,7 @@ import { DEFAULT_LIST_TEXT } from "@/lib/parseShoppingList";
 import { FILTER_STORE_IDS, stores } from "@/lib/mockData";
 import type { ChainId, ShopPreference, StoreId } from "@/lib/types";
 import { OptimizationResults } from "./OptimizationResults";
-import { GlassCard } from "./ui/GlassCard";
+import { Card } from "./ui/Card";
 import { PAGE_CONTAINER, WebLayout } from "./layout/WebLayout";
 
 const PREFERENCES: { value: ShopPreference; label: string }[] = [
@@ -56,14 +56,9 @@ export function ShoppingApp() {
 
     const parsed = parseShoppingList(listText);
     const items = toOptimizerItems(parsed);
-    const unmatched = parsed.filter((p) => !p.matched);
 
     if (items.length === 0) {
-      setError(
-        unmatched.length > 0
-          ? "Ühtegi rida ei tuvastatud. Proovi: piim, munad, kanafilee."
-          : "Lisa vähemalt üks toode.",
-      );
+      setError("Lisa vähemalt üks toode (nt piim, munad, kanafilee).");
       return;
     }
 
@@ -87,119 +82,122 @@ export function ShoppingApp() {
   return (
     <WebLayout>
       <div className={PAGE_CONTAINER}>
-        <header className="mb-10">
-          <p className="text-xs font-medium uppercase tracking-widest text-[#00f5a0]">
-            Ostukorvi terminal
-          </p>
-          <h1 className="font-[family-name:var(--font-outfit)] mt-2 text-3xl font-bold text-white sm:text-4xl">
-            Minu ostunimekiri
-          </h1>
-          <p className="mt-2 max-w-xl text-[#94a89e]">
-            Sisesta tooted — süsteem leiab parima hinna jaotuse.
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Võrdle hindu</h1>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600">
+            Kirjuta tooted eraldi ridadele. Näiteks: piim 2l, munad 10tk,
+            kanafilee 600g.
           </p>
         </header>
 
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-start xl:gap-14">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <GlassCard className="p-5">
-              <label
-                htmlFor="shopping-list"
-                className="mb-2 block text-sm font-medium text-[#c5d9ce]"
-              >
-                Ostunimekiri
-              </label>
-              <textarea
-                id="shopping-list"
-                value={listText}
-                onChange={(e) => {
-                  setListText(e.target.value);
-                  setResult(null);
-                }}
-                rows={10}
-                className="input-glass w-full resize-y rounded-xl px-4 py-3 font-mono text-sm"
-                placeholder="piim 2l&#10;munad 10tk..."
-              />
-            </GlassCard>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <Card className="p-4 sm:p-5">
+            <label
+              htmlFor="shopping-list"
+              className="mb-2 block text-sm font-semibold text-slate-800"
+            >
+              Ostunimekiri
+            </label>
+            <textarea
+              id="shopping-list"
+              value={listText}
+              onChange={(e) => {
+                setListText(e.target.value);
+                setResult(null);
+              }}
+              rows={8}
+              className="input-field textarea-field font-mono text-sm"
+              placeholder="piim 2l&#10;munad 10tk..."
+            />
+          </Card>
 
-            <GlassCard className="p-5">
-              <h2 className="text-sm font-medium text-[#c5d9ce]">Eelistused</h2>
-              <fieldset className="mt-3 grid gap-2 sm:grid-cols-2">
-                <legend className="sr-only">Eelistus</legend>
-                {PREFERENCES.map(({ value, label }) => (
-                  <label
-                    key={value}
-                    className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
-                      preference === value
-                        ? "border-[#00f5a0]/50 bg-[#00f5a0]/10 text-[#00f5a0]"
-                        : "border-white/10 text-[#94a89e] hover:border-white/20"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="preference"
-                      checked={preference === value}
-                      onChange={() => {
-                        setPreference(value);
-                        setResult(null);
-                      }}
-                      className="accent-[#00f5a0]"
-                    />
+          <Card className="p-4 sm:p-5">
+            <h2 className="text-sm font-semibold text-slate-800">Eelistused</h2>
+            <fieldset className="mt-3 space-y-2">
+              <legend className="sr-only">Eelistus</legend>
+              {PREFERENCES.map(({ value, label }) => (
+                <label
+                  key={value}
+                  className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+                    preference === value
+                      ? "border-emerald-400 bg-emerald-50"
+                      : "border-slate-200 bg-white"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="preference"
+                    checked={preference === value}
+                    onChange={() => {
+                      setPreference(value);
+                      setResult(null);
+                    }}
+                    className="h-5 w-5 shrink-0 accent-emerald-600"
+                  />
+                  <span className="text-sm font-medium text-slate-800">
                     {label}
-                  </label>
-                ))}
-              </fieldset>
-            </GlassCard>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+          </Card>
 
-            <GlassCard className="p-5">
-              <h2 className="text-sm font-medium text-[#c5d9ce]">Poed</h2>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {stores.map((store) => (
-                  <label
-                    key={store.id}
-                    className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${
-                      selectedStores.has(store.id)
-                        ? "border-[#00f5a0]/40 bg-[#00f5a0]/10 text-white"
-                        : "border-white/10 text-[#94a89e]"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedStores.has(store.id)}
-                      onChange={() => toggleStore(store.id)}
-                      className="accent-[#00f5a0]"
-                    />
-                    <span className="truncate">{store.name}</span>
-                  </label>
-                ))}
-              </div>
-            </GlassCard>
+          <Card className="p-4 sm:p-5">
+            <h2 className="text-sm font-semibold text-slate-800">Poed</h2>
+            <div className="mt-3 space-y-2">
+              {stores.map((store) => (
+                <label
+                  key={store.id}
+                  className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 ${
+                    selectedStores.has(store.id)
+                      ? "border-emerald-400 bg-emerald-50"
+                      : "border-slate-200"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedStores.has(store.id)}
+                    onChange={() => toggleStore(store.id)}
+                    className="h-5 w-5 shrink-0 rounded accent-emerald-600"
+                  />
+                  <span className="text-sm font-medium text-slate-800">
+                    {store.name}
+                    <span className="ml-1 font-normal text-slate-500">
+                      · {store.distanceKm} km
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </Card>
 
-            {error && (
-              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                {error}
+          {error && (
+            <p
+              className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800"
+              role="alert"
+            >
+              {error}
+            </p>
+          )}
+
+          <button type="submit" className="btn-primary w-full">
+            Leia parim ostuplaan
+          </button>
+        </form>
+
+        <div ref={resultsRef} className="mt-10">
+          {result ? (
+            <OptimizationResults result={result} />
+          ) : (
+            <Card className="p-8 text-center">
+              <p className="text-3xl opacity-30" aria-hidden>
+                🛒
               </p>
-            )}
-
-            <button type="submit" className="btn-neon w-full rounded-xl py-4 text-sm sm:w-auto sm:px-10">
-              Leia parim ostuplaan
-            </button>
-          </form>
-
-          <div ref={resultsRef} className="min-h-[240px]">
-            {result ? (
-              <OptimizationResults result={result} />
-            ) : (
-              <GlassCard className="flex h-full min-h-[280px] flex-col items-center justify-center p-8 text-center">
-                <span className="text-4xl opacity-40">📡</span>
-                <p className="mt-4 text-sm text-[#94a89e]">
-                  Tulemused ilmuvad siia pärast skaneerimist.
-                </p>
-                <p className="mt-2 text-xs text-[#5a6e64]">
-                  Futuristlik hinnamootor käivitub ühe klõpsuga.
-                </p>
-              </GlassCard>
-            )}
-          </div>
+              <p className="mt-3 text-sm text-slate-600">
+                Tulemused ilmuvad siia pärast võrdlust.
+              </p>
+            </Card>
+          )}
         </div>
       </div>
     </WebLayout>

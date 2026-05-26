@@ -5,6 +5,7 @@ import {
   PRODUCT_MAP,
   stores,
 } from "./mockData";
+import { matchProductIdFromText } from "./productMatching";
 import type { ChainId, Store, StoreId } from "./types";
 
 // ——— Types ———
@@ -79,31 +80,6 @@ export interface OptimizationResult {
   message: string;
 }
 
-// ——— Keyword matching ———
-
-const KEYWORD_RULES: { keywords: string[]; productId: string }[] = [
-  { keywords: ["kanafilee", "kana"], productId: "kanafilee" },
-  { keywords: ["munad", "mun"], productId: "munad" },
-  { keywords: ["piim"], productId: "piim" },
-  { keywords: ["riis"], productId: "riis" },
-  { keywords: ["kohv"], productId: "kohv" },
-  { keywords: ["banaan"], productId: "banaan" },
-  { keywords: ["juust"], productId: "juust" },
-  { keywords: ["hakkliha", "hakklih"], productId: "hakkliha" },
-  { keywords: ["kurk"], productId: "kurk" },
-  { keywords: ["tomat"], productId: "tomat" },
-  { keywords: ["pasta", "makaron"], productId: "pasta" },
-  { keywords: ["leib"], productId: "leib" },
-  { keywords: ["sai"], productId: "sai" },
-  { keywords: ["või", "voi"], productId: "või" },
-  { keywords: ["jogurt"], productId: "jogurt" },
-  { keywords: ["kartul"], productId: "kartul" },
-  { keywords: ["wc-paber", "wc paber", "tualettpaber"], productId: "wc-paber" },
-  { keywords: ["pesugeel"], productId: "pesugeel" },
-  { keywords: ["õun", "oun"], productId: "õun" },
-  { keywords: ["hapukoor"], productId: "hapukoor" },
-];
-
 function extractQuantityText(line: string): string {
   const match = line.trim().match(/(\d+\s*(?:l|kg|g|tk|ml|tl))/i);
   return match ? match[1]!.replace(/\s+/g, "") : "1";
@@ -121,15 +97,7 @@ function parseQuantityNumber(quantityText: string): number {
 }
 
 function matchProductId(line: string): string | null {
-  const lower = line.toLowerCase();
-
-  for (const rule of KEYWORD_RULES) {
-    if (rule.keywords.some((kw) => lower.includes(kw))) {
-      return rule.productId;
-    }
-  }
-
-  return null;
+  return matchProductIdFromText(line);
 }
 
 // ——— 1. Parse shopping list ———

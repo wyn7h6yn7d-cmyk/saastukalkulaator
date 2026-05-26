@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 
-/** Minimal manifest — browser tab / favicon, not installable app */
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Säästukorv",
@@ -8,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Tark ostunimekiri, mis leiab odavaima ostuplaani.",
     start_url: "/",
     display: "browser",
-    background_color: "#ffffff",
+    background_color: "#f4f7f5",
     theme_color: "#059669",
     lang: "et",
     icons: [

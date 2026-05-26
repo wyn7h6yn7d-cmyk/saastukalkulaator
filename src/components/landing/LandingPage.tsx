@@ -1,103 +1,96 @@
 import Link from "next/link";
-import { GlassCard } from "../ui/GlassCard";
+import { Card } from "../ui/Card";
 import { PAGE_CONTAINER, WebLayout } from "../layout/WebLayout";
 
 const STEPS = [
-  { step: "01", title: "Sisesta nimekiri", desc: "Kirjuta tooted readena." },
-  { step: "02", title: "Võrdle hindu", desc: "Skaneerime mock-hinnad." },
-  { step: "03", title: "Leia parim plaan", desc: "Üks või mitu poodi." },
-  { step: "04", title: "Säästa", desc: "Näed täpset summat." },
+  { n: "1", title: "Sisesta nimekiri", text: "Kirjuta tooted eraldi ridadele." },
+  { n: "2", title: "Võrdle hindu", text: "Võrdleme poodide näidishindu." },
+  { n: "3", title: "Saa plaan", text: "Näed, kust mida osta." },
+  { n: "4", title: "Säästa", text: "Selge summa ja sääst." },
 ] as const;
 
 export function LandingPage() {
   return (
     <WebLayout>
       <div className={PAGE_CONTAINER}>
-        <section className="grid items-center gap-12 py-8 lg:grid-cols-2 lg:py-16">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#00f5a0]/30 bg-[#00f5a0]/10 px-3 py-1 text-xs font-medium uppercase tracking-widest text-[#00f5a0]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00f5a0]" />
-              Toidupoe tulevik · Tallinn
-            </p>
-            <h1 className="font-[family-name:var(--font-outfit)] mt-6 text-5xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-              <span className="text-glow">Säästukorv</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-[#94a89e]">
-              Nutikas ostukorv, mis leiab odavaima plaani Eesti poodide vahel.
-              Värskelt. Kiiresti. Veebis.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link href="/app" className="btn-neon rounded-xl px-8 py-3.5 text-sm">
-                Alusta võrdlust →
-              </Link>
-              <a
-                href="#kuidas"
-                className="rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
-              >
-                Kuidas töötab
-              </a>
-            </div>
-          </div>
-
-          <GlassCard glow className="relative overflow-hidden p-6 sm:p-8">
-            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#00f5a0]/20 blur-3xl" />
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#00f5a0]">
-              Live preview
-            </p>
-            <p className="mt-2 font-[family-name:var(--font-outfit)] text-3xl font-bold text-white">
-              28,76 €
-            </p>
-            <p className="text-sm text-[#94a89e]">6 toodet · 2 poodi</p>
-            <div className="mt-6 space-y-2 border-t border-white/10 pt-6">
-              {["piim", "munad", "kanafilee", "riis"].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center justify-between rounded-lg bg-black/20 px-3 py-2 text-sm"
-                >
-                  <span className="text-[#c5d9ce]">{item}</span>
-                  <span className="font-mono text-[#00f5a0]">✓</span>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-center text-xs text-[#5a6e64]">
-              Sääst 7,64 € · demoandmed
-            </p>
-          </GlassCard>
-        </section>
-
-        <section id="kuidas" className="scroll-mt-24 py-12">
-          <h2 className="font-[family-name:var(--font-outfit)] text-center text-2xl font-bold text-white sm:text-3xl">
-            Kuidas see töötab
-          </h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map(({ step, title, desc }) => (
-              <GlassCard key={step} className="p-5 transition hover:border-[#00f5a0]/30">
-                <span className="font-mono text-2xl font-bold text-[#00f5a0]/60">
-                  {step}
-                </span>
-                <h3 className="mt-3 font-semibold text-white">{title}</h3>
-                <p className="mt-1 text-sm text-[#94a89e]">{desc}</p>
-              </GlassCard>
-            ))}
-          </div>
-        </section>
-
-        <section className="py-12 text-center">
-          <GlassCard glow className="mx-auto max-w-2xl p-10">
-            <h2 className="font-[family-name:var(--font-outfit)] text-2xl font-bold text-white">
-              Valmis säästma?
-            </h2>
-            <p className="mt-2 text-[#94a89e]">
-              Ava võrdlus brauseris — paigaldust pole vaja.
-            </p>
-            <Link
-              href="/app"
-              className="btn-neon mt-8 inline-flex rounded-xl px-10 py-3.5 text-sm"
-            >
-              Proovi kohe
+        <section className="text-center sm:text-left">
+          <p className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+            Eesti ostukorv
+          </p>
+          <h1 className="mt-4 text-3xl font-bold leading-tight text-slate-900 sm:text-4xl">
+            Osta targemalt.
+            <br />
+            <span className="text-emerald-700">Maksa vähem.</span>
+          </h1>
+          <p className="mt-4 text-base leading-relaxed text-slate-600">
+            Sisesta ostunimekiri ja leia odavaim plaan Rimi, Selveri, Maxima,
+            Prisma ja Lidl vahel.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-start">
+            <Link href="/app" className="btn-primary w-full sm:w-auto">
+              Alusta võrdlust
             </Link>
-          </GlassCard>
+            <Link href="/stores" className="btn-secondary w-full sm:w-auto">
+              Vaata poode
+            </Link>
+          </div>
         </section>
+
+        <Card className="mt-10 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Näidisvõrdlus
+          </p>
+          <p className="savings-hero mt-2 text-emerald-700">28,76 €</p>
+          <p className="mt-1 text-sm text-slate-600">6 toodet · 2 poodi</p>
+          <p className="mt-3 text-sm font-semibold text-emerald-600">
+            Säästad 7,64 €
+          </p>
+        </Card>
+
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-slate-900">Kuidas see töötab?</h2>
+          <ol className="mt-4 space-y-3">
+            {STEPS.map(({ n, title, text }) => (
+              <li key={n} className="card flex gap-4 p-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-800">
+                  {n}
+                </span>
+                <div>
+                  <h3 className="font-semibold text-slate-900">{title}</h3>
+                  <p className="mt-0.5 text-sm text-slate-600">{text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-slate-900">Miks Säästukorv?</h2>
+          <ul className="mt-4 space-y-2">
+            {[
+              "Selge ülevaade, kust osta",
+              "Võrdled mitut poodi korraga",
+              "Säästad raha ja aega",
+              "Töötab telefonis ja arvutis",
+            ].map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm"
+              >
+                <span className="text-emerald-600">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <p className="mt-10 text-center text-xs text-slate-400">
+          <Link href="/pricing" className="underline hover:text-emerald-700">
+            Vaata hindu ja pakette
+          </Link>
+          {" · "}
+          Demoandmed
+        </p>
       </div>
     </WebLayout>
   );

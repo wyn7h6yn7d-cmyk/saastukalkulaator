@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 import { PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
 
 export const metadata = { title: "Hinnakiri" };
@@ -56,62 +56,68 @@ export default function PricingPage() {
   return (
     <WebLayout>
       <div className={PAGE_CONTAINER}>
-        <header className="mb-12 text-center">
-          <p className="text-xs uppercase tracking-widest text-[#00f5a0]">
-            Paketid
+        <header className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-slate-900">Hinnakiri</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Alusta tasuta — makselahendus tuleb hiljem.
           </p>
-          <h1 className="font-[family-name:var(--font-outfit)] mt-2 text-4xl font-bold text-white">
-            Hinnakiri
-          </h1>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <ul className="space-y-5">
           {PLANS.map((plan) => (
-            <GlassCard
-              key={plan.id}
-              glow={plan.highlighted}
-              className={`flex flex-col p-6 ${plan.highlighted ? "lg:-mt-2 lg:mb-2" : ""}`}
-            >
-              {plan.highlighted && (
-                <span className="mb-3 w-fit rounded-full bg-[#00f5a0] px-2.5 py-0.5 text-xs font-bold text-[#041208]">
-                  Populaarseim
-                </span>
-              )}
-              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-bold text-white">
-                {plan.title}
-              </h2>
-              <p className="mt-3">
-                <span
-                  className={`font-bold ${plan.highlighted ? "text-4xl text-[#00f5a0]" : "text-3xl text-white"}`}
-                >
-                  {plan.price}
-                </span>
-                <span className="text-[#94a89e]">{plan.period}</span>
-              </p>
-              <ul className="mt-6 flex-1 space-y-2 text-sm text-[#c5d9ce]">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex gap-2">
-                    <span className="text-[#00f5a0]">✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/app"
-                className={`mt-6 block rounded-xl py-3 text-center text-sm font-semibold ${
-                  plan.highlighted
-                    ? "btn-neon"
-                    : "border border-white/15 bg-white/5 text-white hover:bg-white/10"
+            <li key={plan.id}>
+              <Card
+                className={`p-5 sm:p-6 ${
+                  plan.highlighted ? "ring-2 ring-emerald-400" : ""
                 }`}
               >
-                {plan.cta}
-              </Link>
-            </GlassCard>
+                {plan.highlighted && (
+                  <span className="mb-3 inline-block rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                    Populaarseim
+                  </span>
+                )}
+                <h2 className="text-xl font-bold text-slate-900">{plan.title}</h2>
+                <p className="mt-2">
+                  <span
+                    className={`font-bold ${
+                      plan.highlighted
+                        ? "text-3xl text-emerald-700"
+                        : "text-2xl text-slate-900"
+                    }`}
+                  >
+                    {plan.price}
+                  </span>
+                  <span className="text-slate-500">{plan.period}</span>
+                </p>
+                <ul className="mt-5 space-y-2.5 text-sm text-slate-700">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex gap-2">
+                      <span className="text-emerald-600">✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/app"
+                  className={`mt-6 block w-full text-center ${
+                    plan.highlighted ? "btn-primary" : "btn-secondary"
+                  }`}
+                >
+                  {plan.cta}
+                </Link>
+              </Card>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <p className="mt-10 rounded-xl border border-[#ffb020]/30 bg-[#ffb020]/10 px-4 py-3 text-center text-sm text-[#ffc857]">
+        <p className="mt-8 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-900">
           Makselahendust MVP-s veel ei ole. See on hinnastuse näidis.
+        </p>
+
+        <p className="mt-6 text-center text-sm text-slate-500">
+          <Link href="/" className="font-medium text-emerald-700 hover:underline">
+            ← Tagasi avalehele
+          </Link>
         </p>
       </div>
     </WebLayout>

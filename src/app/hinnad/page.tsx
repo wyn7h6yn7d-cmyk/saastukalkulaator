@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { products } from "@/lib/mockData";
 import { formatEuro } from "@/lib/format";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 import { PAGE_CONTAINER, WebLayout } from "@/components/layout/WebLayout";
 
 export const metadata = { title: "Hinnad" };
@@ -10,55 +10,34 @@ export default function PricesPage() {
   return (
     <WebLayout>
       <div className={PAGE_CONTAINER}>
-        <header className="mb-10">
-          <p className="text-xs uppercase tracking-widest text-[#00f5a0]">
-            Hinnaregister
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Hinnad</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Näidishinnad — reaalajas uuendusi pole veel.
           </p>
-          <h1 className="font-[family-name:var(--font-outfit)] mt-2 text-4xl font-bold text-white">
-            Hinnad
-          </h1>
-          <p className="mt-2 text-[#94a89e]">Näidishinnad · live sync tulekul</p>
         </header>
 
-        <GlassCard className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-white/10 bg-black/30">
-                  <th className="px-5 py-4 font-medium text-[#94a89e]">Toode</th>
-                  <th className="px-5 py-4 font-medium text-[#94a89e]">Ühik</th>
-                  <th className="px-5 py-4 text-right font-medium text-[#94a89e]">
-                    Alates
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {products.map((product) => {
-                  const cheapest = Math.min(...Object.values(product.prices));
-                  return (
-                    <tr
-                      key={product.id}
-                      className="transition hover:bg-white/5"
-                    >
-                      <td className="px-5 py-3.5 font-medium text-white">
-                        {product.name}
-                      </td>
-                      <td className="px-5 py-3.5 text-[#94a89e]">
-                        {product.defaultUnit}
-                      </td>
-                      <td className="px-5 py-3.5 text-right font-mono font-semibold text-[#00f5a0]">
-                        {formatEuro(cheapest)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </GlassCard>
+        <ul className="space-y-2">
+          {products.map((product) => {
+            const cheapest = Math.min(...Object.values(product.prices));
+            return (
+              <li key={product.id}>
+                <Card className="flex min-h-14 items-center justify-between gap-4 px-4 py-3">
+                  <div>
+                    <p className="font-semibold text-slate-900">{product.name}</p>
+                    <p className="text-xs text-slate-500">{product.defaultUnit}</p>
+                  </div>
+                  <p className="shrink-0 text-base font-bold text-emerald-700">
+                    {formatEuro(cheapest)}
+                  </p>
+                </Card>
+              </li>
+            );
+          })}
+        </ul>
 
-        <div className="mt-10 text-center">
-          <Link href="/app" className="btn-neon inline-flex rounded-xl px-8 py-3 text-sm">
+        <div className="mt-8">
+          <Link href="/app" className="btn-primary w-full">
             Võrdle ostunimekirja
           </Link>
         </div>
