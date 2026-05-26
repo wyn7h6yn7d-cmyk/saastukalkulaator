@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Säästukorv
 
-## Getting Started
+Veebirakendus Eesti ostukorvi optimeerimiseks. Lisa ostunimekiri brauseris ja võrdle näidishindu Rimi, Selveri, Maxima, Prisma ja Lidl vahel.
 
-First, run the development server:
+> **Märkus:** Praegu kasutatakse demo/mock andmeid. Reaalajas hindade laadimist ega andmebaasi pole veel lisatud.
+
+## Tehnoloogiad
+
+- [Next.js](https://nextjs.org) (App Router)
+- TypeScript
+- Tailwind CSS
+- ESLint
+
+## Käivitamine kohalikult
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ava [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy Vercelisse
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Pushi projekt GitHubi (või GitLab / Bitbucket).
+2. Mine [vercel.com](https://vercel.com) → **Add New Project**.
+3. Impordi repo — Vercel tuvastab Next.js automaatselt.
+4. Jäta vaike seaded:
+   - **Build Command:** `npm run build`
+   - **Output:** Next.js default
+5. Klõpsa **Deploy**.
 
-## Learn More
+Soovituslik CLI viis:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm i -g vercel
+vercel
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tootmisbuild enne deploy’d:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run build
+npm run start
+```
 
-## Deploy on Vercel
+## Lehed
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Tee | Kirjeldus |
+|-----|-----------|
+| `/` | Avaleht |
+| `/app` | Ostunimekirja võrdlus |
+| `/stores` | Poed |
+| `/hinnad` | Hinnakiri |
+| `/pricing` | Paketid |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Projekti struktuur
+
+```
+src/
+  app/              # App Router lehed
+  components/       # UI (layout, landing, tulemused)
+  lib/              # mock andmed, optimizer
+```

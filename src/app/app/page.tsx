@@ -1,0 +1,9 @@
+import { ShoppingApp } from "@/components/ShoppingApp";
+
+export const metadata = {
+  title: "Minu ostunimekiri — Säästukorv",
+};
+
+export default function ComparePage() {
+  return <ShoppingApp />;
+}
